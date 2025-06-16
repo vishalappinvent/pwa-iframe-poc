@@ -51,7 +51,7 @@ export default function HomePage() {
             border: "1px solid #ccc",
             borderRadius: 8,
           }}
-          sandbox="allow-scripts allow-forms"
+          sandbox="allow-scripts allow-forms allow-same-origin"
         />
       )}
     </main>
