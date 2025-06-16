@@ -1,95 +1,58 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+
+export default function HomePage() {
+  const [magicLink, setMagicLink] = useState("");
+  const [validatedLink, setValidatedLink] = useState("");
+
+  const validateAndSetLink = () => {
+    try {
+      const url = new URL(magicLink);
+      const allowedDomains = [
+        "demo3.staging.ravin-ai.com",
+        "localhost:3000",
+        "localhost",
+      ];
+      if (!allowedDomains.includes(url.hostname)) {
+        alert("Domain not allowed!");
+        return;
+      }
+      setValidatedLink(url.toString());
+    } catch (error) {
+      console.log(error, "error");
+      alert("Invalid URL");
+    }
+  };
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <main style={{ padding: 20 }}>
+      <h1>Magic Link PWA</h1>
+      <input
+        type="text"
+        placeholder="Enter magic link"
+        value={magicLink}
+        onChange={(e) => setMagicLink(e.target.value)}
+        style={{ width: "100%", padding: 8, marginBottom: 12 }}
+      />
+      <button onClick={validateAndSetLink} style={{ padding: "8px 16px" }}>
+        Open in IFrame
+      </button>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      {validatedLink && (
+        <iframe
+          src={validatedLink}
+          title="Magic Link Viewer"
+          style={{
+            width: "100%",
+            height: "500px",
+            marginTop: 20,
+            border: "1px solid #ccc",
+            borderRadius: 8,
+          }}
+          sandbox="allow-scripts allow-forms allow-same-origin"
+        />
+      )}
+    </main>
   );
 }
