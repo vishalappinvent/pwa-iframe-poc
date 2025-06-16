@@ -43,6 +43,7 @@ export default function HomePage() {
         <iframe
           src={validatedLink}
           title="Magic Link Viewer"
+          allow="camera; microphone; fullscreen; display-capture"
           style={{
             width: "100%",
             height: "500px",
@@ -50,7 +51,7 @@ export default function HomePage() {
             border: "1px solid #ccc",
             borderRadius: 8,
           }}
-          sandbox="allow-scripts allow-forms allow-same-origin"
+          sandbox="allow-scripts allow-forms"
         />
       )}
     </main>
