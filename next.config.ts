@@ -2,7 +2,7 @@ import withPWA from "next-pwa";
 // @ts-ignore
 import runtimeCaching from "next-pwa/cache";
 
-const baseConfig = {
+const config = {
   reactStrictMode: true,
 };
 
@@ -12,4 +12,9 @@ export default withPWA({
   register: true,
   skipWaiting: true,
   runtimeCaching,
-})(baseConfig);
+  buildExcludes: [/middleware-manifest.json$/],
+  publicExcludes: ['!robots.txt'],
+  fallbacks: {
+    document: '/_offline',
+  },
+})(config);
