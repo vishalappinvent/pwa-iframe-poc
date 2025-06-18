@@ -1,11 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function HomePage() {
   const [magicLink, setMagicLink] = useState("");
   const [validatedLink, setValidatedLink] = useState("");
+  const [isStandalone, setIsStandalone] = useState(false);
+
+  useEffect(() => {
+    // Check if the app is running in standalone mode
+    if (window.matchMedia('(display-mode: standalone)').matches || 
+        (window.navigator as any).standalone === true) {
+      setIsStandalone(true);
+    }
+  }, []);
 
   const validateAndSetLink = () => {
     try {
@@ -41,7 +50,9 @@ export default function HomePage() {
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">Magic Link PWA</h1>
             <p className="text-lg text-gray-600 mb-8">
-              Test magic links and push notifications in your PWA
+              {isStandalone 
+                ? "Running in standalone mode" 
+                : "Test magic links and push notifications in your PWA"}
             </p>
             
             {/* Navigation Links */}
