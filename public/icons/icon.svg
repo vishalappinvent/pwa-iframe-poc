@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="256" fill="#317EFB"/>
+  
+  <!-- Notification bell -->
+  <path d="M256 64C238.3 64 224 78.3 224 96V128H288V96C288 78.3 273.7 64 256 64Z" fill="white"/>
+  <path d="M352 192H160C142.3 192 128 206.3 128 224C128 241.7 142.3 256 160 256H352C369.7 256 384 241.7 384 224C384 206.3 369.7 192 352 192Z" fill="white"/>
+  <path d="M256 320C238.3 320 224 334.3 224 352V384H288V352C288 334.3 273.7 320 256 320Z" fill="white"/>
+  
+  <!-- Notification dot -->
+  <circle cx="384" cy="128" r="32" fill="#FF3B30"/>
+</svg> 
