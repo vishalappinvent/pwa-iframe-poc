@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { messaging } from '../../firebase/admin';
-import { getServerTokens, getServerTokenCount } from '../../utils/serverTokenStorage';
+import { getServerTokens, getServerTokenCount, removeServerTokens } from '../../utils/serverTokenStorage';
 
 export async function POST(request: Request) {
   try {
@@ -69,8 +69,8 @@ export async function POST(request: Request) {
       responses: response.responses
     });
     
+    const failedTokens: string[] = [];
     if (response.failureCount > 0) {
-      const failedTokens: string[] = [];
       response.responses.forEach((resp, idx) => {
         if (!resp.success) {
           failedTokens.push(tokens[idx]);
@@ -80,7 +80,12 @@ export async function POST(request: Request) {
           });
         }
       });
-      console.log('Failed tokens:', failedTokens);
+      
+      // Remove failed tokens from storage
+      if (failedTokens.length > 0) {
+        console.log('Removing failed tokens:', failedTokens);
+        removeServerTokens(failedTokens);
+      }
     }
 
     return NextResponse.json({
@@ -88,7 +93,8 @@ export async function POST(request: Request) {
       response: {
         successCount: response.successCount,
         failureCount: response.failureCount,
-        totalTokens: tokens.length
+        totalTokens: tokens.length,
+        failedTokens
       },
     });
   } catch (error) {
