@@ -2,22 +2,27 @@
 
 import { useState, useEffect } from 'react';
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
 export default function PWAInstall() {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isInstallable, setIsInstallable] = useState(false);
 
   useEffect(() => {
     // Check if the app is already installed
     if (window.matchMedia('(display-mode: standalone)').matches || 
-        (window.navigator as any).standalone === true) {
+        (window.navigator as { standalone?: boolean }).standalone === true) {
       setIsInstalled(true);
     }
 
     // Listen for the beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e);
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
       setIsInstallable(true);
     };
 
@@ -69,7 +74,7 @@ export default function PWAInstall() {
         <div className="flex-1">
           <h3 className="text-sm font-medium text-gray-900">Install PushPWA</h3>
           <p className="mt-1 text-sm text-gray-500">
-            Install this application on your device for quick and easy access when you're on the go.
+            Install this application on your device for quick and easy access when you&apos;re on the go.
           </p>
           <div className="mt-4 flex space-x-3">
             <button

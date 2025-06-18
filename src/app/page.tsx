@@ -11,7 +11,7 @@ export default function HomePage() {
   useEffect(() => {
     // Check if the app is running in standalone mode
     if (window.matchMedia('(display-mode: standalone)').matches || 
-        (window.navigator as any).standalone === true) {
+        (window.navigator as { standalone?: boolean }).standalone === true) {
       setIsStandalone(true);
     }
   }, []);
