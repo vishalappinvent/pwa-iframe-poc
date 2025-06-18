@@ -13,8 +13,5 @@ export default withPWA({
   skipWaiting: true,
   runtimeCaching,
   buildExcludes: [/middleware-manifest.json$/],
-  publicExcludes: ['!robots.txt'],
-  fallbacks: {
-    document: '/_offline',
-  },
+  publicExcludes: ['!robots.txt']
 })(config);

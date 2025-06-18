@@ -8,38 +8,68 @@ export default function PushNotification() {
   const [isTokenFound, setTokenFound] = useState(false);
   const [notification, setNotification] = useState({ title: '', body: '' });
   const [status, setStatus] = useState<{ type: 'success' | 'error' | null; message: string }>({ type: null, message: '' });
+  const [isSupported, setIsSupported] = useState(true);
 
   useEffect(() => {
+    // Check if the browser supports required APIs
+    const checkSupport = () => {
+      const isSupported = 
+        typeof window !== 'undefined' &&
+        'serviceWorker' in navigator &&
+        'PushManager' in window &&
+        'Notification' in window;
+      
+      setIsSupported(isSupported);
+      
+      if (!isSupported) {
+        setStatus({
+          type: 'error',
+          message: 'Your browser does not support push notifications. Please try a different browser.'
+        });
+      }
+    };
+
+    checkSupport();
+  }, []);
+
+  useEffect(() => {
+    if (!isSupported) return;
+
     const initializeNotifications = async () => {
-      const token = await requestNotificationPermission();
-      if (token) {
-        setTokenFound(true);
-        console.log('Notification token:', token);
-        
-        try {
-          const response = await fetch('/api/register-token', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ token }),
-          });
+      try {
+        const token = await requestNotificationPermission();
+        if (token) {
+          setTokenFound(true);
+          console.log('Notification token:', token);
+          
+          try {
+            const response = await fetch('/api/register-token', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ token }),
+            });
 
-          if (!response.ok) {
-            throw new Error('Failed to register token with server');
+            if (!response.ok) {
+              throw new Error('Failed to register token with server');
+            }
+
+            setStatus({ type: 'success', message: 'Notifications enabled successfully!' });
+            console.log('Token registered with server successfully');
+          } catch (error) {
+            console.error('Error registering token with server:', error);
+            setStatus({ type: 'error', message: 'Failed to enable notifications. Please try again.' });
           }
-
-          setStatus({ type: 'success', message: 'Notifications enabled successfully!' });
-          console.log('Token registered with server successfully');
-        } catch (error) {
-          console.error('Error registering token with server:', error);
-          setStatus({ type: 'error', message: 'Failed to enable notifications. Please try again.' });
         }
+      } catch (error) {
+        console.error('Error initializing notifications:', error);
+        setStatus({ type: 'error', message: 'Failed to initialize notifications. Please try again.' });
       }
     };
 
     initializeNotifications();
-  }, []);
+  }, [isSupported]);
 
   const onSendNotification = async () => {
     if (!notification.title || !notification.body) {
@@ -56,6 +86,26 @@ export default function PushNotification() {
       setStatus({ type: 'error', message: 'Failed to send notification. Please try again.' });
     }
   };
+
+  if (!isSupported) {
+    return (
+      <div className="min-h-[400px] max-w-md mx-auto p-8 bg-white rounded-xl shadow-2xl border border-gray-100">
+        <div className="text-center py-12">
+          <div className="mb-6">
+            <div className="mx-auto h-16 w-16 rounded-full bg-red-100 flex items-center justify-center">
+              <svg className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">Browser Not Supported</h3>
+          <p className="text-gray-600">
+            Your browser does not support push notifications. Please try using a modern browser like Chrome, Firefox, or Edge.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[400px] max-w-md mx-auto p-8 bg-white rounded-xl shadow-2xl border border-gray-100">

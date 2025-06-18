@@ -1,5 +1,7 @@
-import { initializeApp } from 'firebase/app';
-import { getMessaging, getToken } from 'firebase/messaging';
+'use client';
+
+import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
+import { getMessaging, getToken, Messaging } from 'firebase/messaging';
 
 const firebaseConfig = {
   // Replace with your Firebase config
@@ -11,17 +13,38 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Log config (without sensitive values)
-console.log('Firebase Config:', {
-  ...firebaseConfig,
-  apiKey: firebaseConfig.apiKey ? '***' : undefined,
-});
+// Initialize Firebase only on the client side
+let app: FirebaseApp | undefined;
+let messaging: Messaging | undefined;
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
+if (typeof window !== 'undefined') {
+  // Log config (without sensitive values)
+  console.log('Firebase Config:', {
+    ...firebaseConfig,
+    apiKey: firebaseConfig.apiKey ? '***' : undefined,
+  });
+
+  // Initialize Firebase if not already initialized
+  if (!getApps().length) {
+    app = initializeApp(firebaseConfig);
+    messaging = getMessaging(app);
+  } else {
+    app = getApps()[0];
+    messaging = getMessaging(app);
+  }
+}
 
 export const requestNotificationPermission = async () => {
+  if (typeof window === 'undefined') {
+    console.log('Running on server side, skipping notification permission request');
+    return null;
+  }
+
+  if (!messaging) {
+    console.error('Firebase messaging is not initialized');
+    return null;
+  }
+
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
