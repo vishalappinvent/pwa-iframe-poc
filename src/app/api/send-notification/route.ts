@@ -49,7 +49,15 @@ export async function POST(request: Request) {
           aps: {
             sound: 'default',
             badge: 1,
+            'content-available': 1,
           },
+          data: {
+            url: '/',
+            click_action: 'FLUTTER_NOTIFICATION_CLICK',
+          },
+        },
+        headers: {
+          'apns-priority': '10',
         },
       },
       webpush: {
@@ -58,6 +66,12 @@ export async function POST(request: Request) {
         },
         notification: {
           requireInteraction: true,
+          data: {
+            url: '/',
+          },
+        },
+        fcmOptions: {
+          link: '/',
         },
       },
     });

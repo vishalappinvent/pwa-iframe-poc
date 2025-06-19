@@ -1,7 +1,5 @@
 /// <reference lib="webworker" />
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const CACHE_NAME = 'pwa-cache-v1';
 const urlsToCache = [
   '/',
@@ -55,7 +53,8 @@ sw.addEventListener('push', (event: PushEvent) => {
       body: data.body,
       icon: '/icons/icon-192x192.png',
       badge: '/icons/icon-192x192.png',
-      data: data.data || {}
+      data: data.data || {},
+      requireInteraction: true
     })
   );
 });
@@ -63,12 +62,21 @@ sw.addEventListener('push', (event: PushEvent) => {
 sw.addEventListener('notificationclick', (event: NotificationEvent) => {
   event.notification.close();
   
+  const urlToOpen = new URL('/', self.location.origin).href;
+  
   event.waitUntil(
-    sw.clients.matchAll({ type: 'window' }).then((clientList: readonly WindowClient[]) => {
-      if (clientList.length > 0) {
-        return clientList[0].focus();
+    sw.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList: readonly WindowClient[]) => {
+      // Check if there's already a window/tab open with the target URL
+      for (const client of clientList) {
+        if (client.url === urlToOpen && 'focus' in client) {
+          return client.focus();
+        }
       }
-      return sw.clients.openWindow('/');
+      
+      // If no window/tab is open, open a new one
+      if (sw.clients.openWindow) {
+        return sw.clients.openWindow(urlToOpen);
+      }
     })
   );
 }); 
