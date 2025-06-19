@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import NotificationPermission from "./components/NotificationPermission";
 
 export default function HomePage() {
   const [magicLink, setMagicLink] = useState("");
@@ -67,6 +68,11 @@ export default function HomePage() {
                 Test Notifications
               </Link>
             </div>
+          </div>
+
+          {/* Notification Permission Component */}
+          <div className="mb-8">
+            <NotificationPermission />
           </div>
 
           <div className="bg-white shadow rounded-lg p-6">

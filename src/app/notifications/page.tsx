@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import PushNotification from '../components/PushNotification';
+import NotificationPermission from '../components/NotificationPermission';
 
 export default function NotificationsPage() {
   const [isBrowser, setIsBrowser] = useState(false);
@@ -25,8 +26,13 @@ export default function NotificationsPage() {
 
   return (
     <main className="min-h-screen p-8">
-      <div className="max-w-md mx-auto">
+      <div className="max-w-md mx-auto space-y-6">
         <h1 className="text-2xl font-bold mb-6">Push Notifications Demo</h1>
+        
+        {/* Notification Permission Component */}
+        <NotificationPermission />
+        
+        {/* Push Notification Component */}
         <PushNotification />
       </div>
     </main>
