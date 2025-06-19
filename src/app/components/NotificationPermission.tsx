@@ -8,11 +8,19 @@ export default function NotificationPermission() {
   const [isSupported, setIsSupported] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [isChromeIOS, setIsChromeIOS] = useState(false);
 
   useEffect(() => {
+    // Check if we're on Chrome iOS
+    const chromeIOS = typeof window !== 'undefined' && 
+      /CriOS/.test(navigator.userAgent) && 
+      /iPad|iPhone|iPod/.test(navigator.userAgent);
+    
+    setIsChromeIOS(chromeIOS);
+
     // Check if notifications are supported
     if (typeof window !== 'undefined') {
-      const supported = 'Notification' in window && 'serviceWorker' in navigator;
+      const supported = 'Notification' in window && 'serviceWorker' in navigator && !chromeIOS;
       setIsSupported(supported);
       
       if (supported) {
@@ -55,6 +63,25 @@ export default function NotificationPermission() {
       setIsLoading(false);
     }
   };
+
+  if (isChromeIOS) {
+    return (
+      <div className="max-w-md mx-auto p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <h3 className="text-lg font-medium text-yellow-800 mb-2">Chrome on iOS Detected</h3>
+        <p className="text-yellow-700 text-sm mb-3">
+          Chrome on iOS has limited push notification support due to iOS restrictions.
+        </p>
+        <div className="text-yellow-700 text-sm space-y-1">
+          <p><strong>Recommendations:</strong></p>
+          <ul className="list-disc list-inside space-y-1">
+            <li>Use Safari and add the app to home screen</li>
+            <li>Use Firefox on iOS</li>
+            <li>Use the app from your home screen</li>
+          </ul>
+        </div>
+      </div>
+    );
+  }
 
   if (!isSupported) {
     return (

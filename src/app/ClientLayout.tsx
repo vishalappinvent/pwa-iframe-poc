@@ -12,21 +12,40 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   useEffect(() => {
-    registerServiceWorker();
+    // Check if we're on iOS Chrome
+    const isChromeIOS = typeof window !== 'undefined' && 
+      /CriOS/.test(navigator.userAgent) && 
+      /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-    // Initialize notifications
+    if (isChromeIOS) {
+      console.log('Chrome on iOS detected - skipping service worker registration');
+      return;
+    }
+
+    // Register service worker with error handling
+    try {
+      registerServiceWorker();
+    } catch (error) {
+      console.error('Error registering service worker:', error);
+    }
+
+    // Initialize notifications with error handling
     const initializeNotifications = async () => {
       try {
         const token = await requestNotificationPermission();
         if (token) {
           // Register token with server
-          await fetch('/api/register-token', {
+          const response = await fetch('/api/register-token', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({ token }),
           });
+
+          if (!response.ok) {
+            console.error('Failed to register token with server');
+          }
         }
       } catch (error) {
         console.error('Error initializing notifications:', error);

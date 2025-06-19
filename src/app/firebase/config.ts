@@ -17,6 +17,11 @@ const firebaseConfig = {
 let app: FirebaseApp | undefined;
 let messaging: Messaging | undefined;
 
+// Check if we're on Chrome iOS
+const isChromeIOS = typeof window !== 'undefined' && 
+  /CriOS/.test(navigator.userAgent) && 
+  /iPad|iPhone|iPod/.test(navigator.userAgent);
+
 if (typeof window !== 'undefined') {
   // Log config (without sensitive values)
   console.log('Firebase Config:', {
@@ -26,17 +31,44 @@ if (typeof window !== 'undefined') {
 
   // Initialize Firebase if not already initialized
   if (!getApps().length) {
-    app = initializeApp(firebaseConfig);
-    messaging = getMessaging(app);
+    try {
+      app = initializeApp(firebaseConfig);
+      messaging = getMessaging(app);
+    } catch (error) {
+      console.error('Error initializing Firebase:', error);
+    }
   } else {
     app = getApps()[0];
-    messaging = getMessaging(app);
+    try {
+      messaging = getMessaging(app);
+    } catch (error) {
+      console.error('Error getting messaging:', error);
+    }
   }
 }
 
 export const requestNotificationPermission = async () => {
   if (typeof window === 'undefined') {
     console.log('Running on server side, skipping notification permission request');
+    return null;
+  }
+
+  // Check if notifications are supported
+  if (!('Notification' in window)) {
+    console.log('Notifications not supported in this browser');
+    return null;
+  }
+
+  // Check if service worker is supported
+  if (!('serviceWorker' in navigator)) {
+    console.log('Service Worker not supported in this browser');
+    return null;
+  }
+
+  // Special handling for iOS Chrome
+  if (isChromeIOS) {
+    console.log('Chrome on iOS detected - limited push notification support');
+    // Chrome on iOS has limited push notification support
     return null;
   }
 
@@ -48,11 +80,16 @@ export const requestNotificationPermission = async () => {
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      const token = await getToken(messaging, {
-        vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-      });
-      console.log('Notification permission granted. Token:', token);
-      return token;
+      try {
+        const token = await getToken(messaging, {
+          vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+        });
+        console.log('Notification permission granted. Token:', token);
+        return token;
+      } catch (tokenError) {
+        console.error('Error getting token:', tokenError);
+        return null;
+      }
     } else {
       console.log('Notification permission denied');
       return null;
