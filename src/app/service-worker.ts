@@ -48,6 +48,19 @@ sw.addEventListener('fetch', (event: FetchEvent) => {
 sw.addEventListener('push', (event: PushEvent) => {
   const data = event.data?.json() || { title: 'New Notification', body: 'You have a new notification' };
   
+  // Send message to all clients
+  sw.clients.matchAll().then((clients) => {
+    clients.forEach((client) => {
+      client.postMessage({
+        type: 'PUSH_NOTIFICATION',
+        title: data.title,
+        body: data.body,
+        data: data.data || {}
+      });
+    });
+  });
+
+  // Show notification if supported
   event.waitUntil(
     sw.registration.showNotification(data.title, {
       body: data.body,
@@ -55,6 +68,9 @@ sw.addEventListener('push', (event: PushEvent) => {
       badge: '/icons/icon-192x192.png',
       data: data.data || {},
       requireInteraction: true
+    }).catch((error) => {
+      console.log('Could not show notification:', error);
+      // Fallback: just send message to clients
     })
   );
 });

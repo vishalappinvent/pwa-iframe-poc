@@ -16,6 +16,13 @@ export default function PushNotification() {
     try {
       const result = await sendNotification(title, body);
       setMessage(`Notification sent successfully! Sent to ${result.response.successCount} devices.`);
+      
+      // Also trigger in-app notification for immediate feedback
+      const event = new CustomEvent('custom-notification', {
+        detail: { title, body }
+      });
+      window.dispatchEvent(event);
+      
     } catch (error) {
       setMessage(`Error: ${error instanceof Error ? error.message : 'Failed to send notification'}`);
     } finally {
@@ -76,12 +83,12 @@ export default function PushNotification() {
       </div>
       
       <div className="mt-4 p-3 bg-blue-50 rounded-md">
-        <h3 className="text-sm font-medium text-blue-800 mb-2">iOS Instructions:</h3>
+        <h3 className="text-sm font-medium text-blue-800 mb-2">📱 iOS Instructions:</h3>
         <ul className="text-xs text-blue-700 space-y-1">
-          <li>• Make sure you&apos;ve granted notification permissions</li>
-          <li>• The app must be added to home screen for best results</li>
-          <li>• Notifications may take a few seconds to appear</li>
-          <li>• Tap the notification to open the app</li>
+          <li>• Notifications will appear in the app (top-right bell icon)</li>
+          <li>• Safari on iOS doesn&apos;t show system notifications</li>
+          <li>• Add to home screen for better experience</li>
+          <li>• Use Chrome/Firefox on iOS for system notifications</li>
         </ul>
       </div>
     </div>
