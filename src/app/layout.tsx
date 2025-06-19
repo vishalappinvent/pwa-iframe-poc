@@ -29,7 +29,10 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/192x192/1f4ac.png" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-152x152.png" />
         <meta name="theme-color" content="#317EFB" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -38,7 +41,9 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="application-name" content="PushPWA" />
         <meta name="msapplication-TileColor" content="#317EFB" />
-        <meta name="msapplication-TileImage" content="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/144x144/1f4ac.png" />
+        <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
+        <meta name="apple-touch-fullscreen" content="yes" />
+        <meta name="format-detection" content="telephone=no" />
       </head>
       <body className="min-h-screen bg-gray-50">
         <ClientLayout>{children}</ClientLayout>
