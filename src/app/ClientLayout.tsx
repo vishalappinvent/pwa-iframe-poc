@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { requestNotificationPermission } from './firebase/config';
-import InAppNotification from './components/InAppNotification';
+import AppIconBadge from './components/AppIconBadge';
 import PWAInstall from './components/PWAInstall';
 import { registerServiceWorker } from './service-worker-registration';
 
@@ -40,7 +40,7 @@ export default function ClientLayout({
     <>
       {children}
       <PWAInstall />
-      <InAppNotification />
+      <AppIconBadge />
     </>
   );
 } 
